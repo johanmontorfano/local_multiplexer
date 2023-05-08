@@ -53,6 +53,12 @@ func main() {
 						for headerName, headerValue := range response.Header {
 							w.Header().Add(headerName, strings.Join(headerValue, ", "))
 						}
+
+						// If no CORS header is set, a CORS header is set to allow a non-opaque response.
+						if w.Header().Get("Access-Control-Allow-Origin") == "" {
+							w.Header().Set("Access-Control-Allow-Origin", "*")
+						}
+
 						w.Write(body)
 					}
 				}
