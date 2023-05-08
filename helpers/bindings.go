@@ -4,12 +4,11 @@ import (
 	"johanmnto/epr/config"
 	"johanmnto/epr/net"
 	"net/http"
-	"strconv"
 )
 
 // Determines if a request points to a binding in the configuration.
 func PointsToKnownTarget(req *http.Request, config *config.EPRConfig) bool {
-	var targetAsNumber, err = strconv.Atoi(req.Header.Get(net.TARGET_HEADER_NAME))
+	var targetAsNumber, err = net.ExtractBindedPort(req)
 	if err != nil {
 		return false
 	}

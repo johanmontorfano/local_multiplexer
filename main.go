@@ -7,7 +7,6 @@ import (
 	"johanmnto/epr/helpers"
 	"johanmnto/epr/net"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -26,8 +25,18 @@ func main() {
 
 	server := helpers.MakeServer(&serverConfiguration)
 	server.MakeHandler(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD")
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+
+		// If the reques is an `OPTIONS` request, the server will automatically respond.
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(200)
+			return
+		}
+
 		if helpers.PointsToKnownTarget(r, &serverConfiguration) {
-			headerTargetAsNumber, _ := strconv.Atoi(r.Header.Get(net.TARGET_HEADER_NAME))
+			headerTargetAsNumber, _ := net.ExtractBindedPort(r)
 			binder, err := net.GenerateBinder(r, serverConfiguration.Bindings[headerTargetAsNumber])
 
 			if err != nil {
