@@ -14,7 +14,6 @@ const PERFERS_HEADER_OVER_PARAM = true
 
 // Configuration of a binding.
 type Binding struct {
-	MaxResWaitTime int `yaml:"max_res_wait_time"`
 	// Net scheme used to transfert the request that will always override the default one.
 	DefaultTransfertScheme *string `yaml:"transfert_scheme"`
 }

@@ -16,7 +16,7 @@ EPR has several features that make it a powerful tool for handling network traff
 
 4. Flexible Configuration: EPR is easy to configure via a YAML file, allowing for quick and easy setup.
 
-5. Support for Server-Sent Events binding (binary files binding is on it's way)
+5. Support for Server-Sent Events binding.
 
 Configuration
 --------------------
@@ -30,7 +30,6 @@ server:
     https_key_path:  (optionnal)string
 bindings:
     [binding_to_port]:
-        max_res_wait_time:  usize
         transfert_scheme:   (optionnal)string
 ```
 
