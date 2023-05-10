@@ -46,8 +46,8 @@ func main() {
 			if err != nil {
 				println(err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
-
 			// Here, the handler will automatically determines if the request should be handled as a standard http request
 			// or as an Event Stream.
 			// ! Note that the handler will only forward to SSE handlers request which has the `Accept` header set as `text/event-stream`.

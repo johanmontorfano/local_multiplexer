@@ -16,6 +16,7 @@ const PERFERS_HEADER_OVER_PARAM = true
 type Binding struct {
 	// Net scheme used to transfert the request that will always override the default one.
 	DefaultTransfertScheme *string `yaml:"transfert_scheme"`
+	Enabled                bool    `yaml:"enabled"`
 }
 type Binder struct {
 	TargetPort          int
@@ -51,7 +52,13 @@ func ExtractBindedPort(req *http.Request) (int, error) {
 
 // Creates a `Binder` from the request.
 func GenerateBinder(req *http.Request, appropriateBinding *Binding) (*Binder, error) {
+	// Extracts the port to use for this binder
 	var port, err = ExtractBindedPort(req)
+
+	// Determines if the binded configuration allows it to be used.
+	if !appropriateBinding.Enabled {
+		return nil, errors.New("binding" + strconv.Itoa(port) + "disabled")
+	}
 
 	if err != nil {
 		return nil, errors.New("no " + TARGET_HEADER_NAME + " header found")
@@ -61,6 +68,8 @@ func GenerateBinder(req *http.Request, appropriateBinding *Binding) (*Binder, er
 
 // Binds a request to a specific port.
 func (binder *Binder) BindToFromBinder() (*http.Response, error) {
+	fmt.Printf("Binds regular from %s to ::%d", binder.OrginateFromRequest.RemoteAddr, binder.TargetPort)
+
 	// Extracts `RequestURI` to build the new request URL
 	binder.OrginateFromRequest.RequestURI = ""
 	binder.OrginateFromRequest.URL.Host = fmt.Sprintf("localhost:%d", binder.TargetPort)
@@ -77,6 +86,8 @@ func (binder *Binder) BindToFromBinder() (*http.Response, error) {
 
 // Create a SSE binding channel
 func (binder *Binder) BindSseFromBinder(w http.ResponseWriter) error {
+	fmt.Printf("Binds SSE from %s to ::%d", binder.OrginateFromRequest.RemoteAddr, binder.TargetPort)
+
 	// Accept the incoming SSE request.
 	incomingStream := MakeIncomingEventStream(w)
 

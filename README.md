@@ -24,16 +24,17 @@ EPR is configured via a YAML file that follows the following architecture, that 
 
 ```
 server:
-    http_port:       int
-    https_port:      (optionnal)int
-    https_cert_path: (optionnal)string
-    https_key_path:  (optionnal)string
+    http_port:         int
+    https_port:        (optionnal)int
+    https_cert_path:   (optionnal)string
+    https_key_path:    (optionnal)string
 bindings:
     [binding_to_port]:
+        enabled:            bool
         transfert_scheme:   (optionnal)string
 ```
 
-The `binding_to_port` is the port number to which the request is targeted, and the `max_res_wait_time` is the maximum time EPR waits for a response from the local server before timing out.
+The `binding_to_port` is the port number to which the request is targeted.
 
 Usage
 --------------------
