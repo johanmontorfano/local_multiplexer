@@ -16,6 +16,8 @@ EPR has several features that make it a powerful tool for handling network traff
 
 4. Flexible Configuration: EPR is easy to configure via a YAML file, allowing for quick and easy setup.
 
+5. Support for Server-Sent Events binding (binary files binding is on it's way)
+
 Configuration
 --------------------
 EPR is configured via a YAML file that follows the following architecture, that should be saved in the root of the executable as `config.epr.yaml`:

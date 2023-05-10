@@ -23,6 +23,10 @@ func main() {
 		fmt.Println("Found an HTTPS configuration: will use port", *serverConfiguration.Server.HttpsPort, "for HTTPS requests.")
 	}
 
+	for binding := range serverConfiguration.Bindings {
+		fmt.Println("Found a binding to port", binding)
+	}
+
 	server := helpers.MakeServer(&serverConfiguration)
 	server.MakeHandler(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -42,6 +46,13 @@ func main() {
 			if err != nil {
 				println(err.Error())
 				w.WriteHeader(http.StatusInternalServerError)
+			}
+
+			// Here, the handler will automatically determines if the request should be handled as a standard http request
+			// or as an Event Stream.
+			// ! Note that the handler will only forward to SSE handlers request which has the `Accept` header set as `text/event-stream`.
+			if r.Header.Get("Accept") == "text/event-stream" {
+				binder.BindSseFromBinder(w)
 			} else {
 				// Transfers the request to the binded port
 				response, err := binder.BindToFromBinder()
@@ -63,14 +74,10 @@ func main() {
 							w.Header().Add(headerName, strings.Join(headerValue, ", "))
 						}
 
-						// If no CORS header is set, a CORS header is set to allow a non-opaque response.
-						if w.Header().Get("Access-Control-Allow-Origin") == "" {
-							w.Header().Set("Access-Control-Allow-Origin", "*")
-						}
-
 						w.Write(body)
 					}
 				}
+
 			}
 
 		} else {

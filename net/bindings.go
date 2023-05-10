@@ -73,6 +73,34 @@ func (binder *Binder) BindToFromBinder() (*http.Response, error) {
 		binder.OrginateFromRequest.URL.Scheme = "http"
 	}
 
-	// println(binder.OrginateFromRequest.URL.RequestURI())
 	return http.DefaultClient.Do(binder.OrginateFromRequest)
+}
+
+// Create a SSE binding channel
+func (binder *Binder) BindSseFromBinder(w http.ResponseWriter) error {
+	// Accept the incoming SSE request.
+	incomingStream := MakeIncomingEventStream(w)
+
+	if incomingStream.SupportEventStreams {
+		// Make a request for the targeted server for an SSE connection
+		outgoingStream, err := MakeOutgoingEventStreamFromRequest(binder.OrginateFromRequest, binder.BindableConfig)
+		if err != nil {
+			w.WriteHeader(500)
+			return err
+		}
+
+		if err := outgoingStream.ReadEvents(
+			func(readLine string) {
+				incomingStream.WriteToBuffer(readLine)
+				incomingStream.SendBuffer()
+			}); err != nil {
+			w.WriteHeader(500)
+			return err
+		}
+	} else {
+		// Sent if the client doesn't support event-streams.
+		w.WriteHeader(400)
+	}
+
+	return nil
 }
