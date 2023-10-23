@@ -1,4 +1,4 @@
-module johanmnto/mutliplexer
+module johanmnto/multiplexer
 
 go 1.20
 

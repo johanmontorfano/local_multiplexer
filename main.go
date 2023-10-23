@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	jnet "johanmnto/mutliplexer/net"
+	jnet "johanmnto/multiplexer/net"
 	"net/http"
 	"strings"
 	"sync"
